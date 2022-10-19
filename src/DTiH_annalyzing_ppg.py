@@ -4,10 +4,15 @@ Created on Wed Oct  5 10:56:18 2022
 
 @author: 20212077
 """
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import heartpy as hp
 import openpyxl
+
+from DTiH_extra_functions import interpolation
+
+SCORE_MEDIAN = {'rmssd': (45,27), 'pnn50': (0.11,0.04), 'lf/hf': (0.88,2.75)}
 
 def read_excel(file_name,column_nr=1,array=False):
     """This function reads the heart rate signal data from an excel file
@@ -118,6 +123,15 @@ def counting_score2(peak_data,score_median):
     
     return score_AF,score_non_AF
 
+def counting_score3(df_input: pd.DataFrame) -> pd.DataFrame:
+
+    for predictor in ['rmssd', 'pnn50', 'lf/hf']:
+        df_input["normalized_" + predictor] = df_input[predictor].apply(lambda x: interpolation(x, predictor), )
+    
+
+    return df_input
+
+
 def collect_all_data(total_patients,movement,nr_measurement):
     """This function gathers all the data from multiple patients"""
     rmssd = []
@@ -140,9 +154,7 @@ if __name__ == '__main__':
 
     # Score interval: {'parameter': [(AF occurrence interval),(Non AF occurrence interval)]}
     score_interval = {'rmssd': [(24,108),(19,41)], 'pnn50': [(0.02,0.36),(0.01,0.11)], 'hf': [(7.6,23),(4.8,16.6)]}
-
     # Score median: {'parameter': (AF median, Non AF median)}
-    score_median = {'rmssd': (45,27), 'pnn50': (0.11,0.04), 'lf/hf': (0.88,2.75)}
 
     #plot_PPG_signal(timestamp,ppg_signal)
     #plot_peak_detection(peak_data,400)

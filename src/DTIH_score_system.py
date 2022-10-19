@@ -7,7 +7,6 @@ Created on Mon Oct 10 11:22:25 2022
 
 import pandas as pd
 
-
 #format for patient data: [BMI,ADS,CDS,RMSSD,pNN50,LF/HF]
 
 patient_data = [[28,23,12,1,1,1],[25,2,30,1,0,1],[32,12,23,0,1,1]]
@@ -50,8 +49,10 @@ def total_score(patient_data_list):
         print(' ')
 
 def calculate_score(df_input: pd.DataFrame) -> pd.DataFrame:
-
-    return
+    df_input["ppg_predictors"] = (1.036* df_input['normalized_rmssd'] + 1.057 * df_input['normalized_pnn50'] + 0.509 * df_input['normalized_lf/hf']) / 2.602
+    df_input['lifestyle_predictors'] = (1.03 * df_input['BMI'] + 1.23 * df_input['smoking'])
+    df_input['chance'] = (0.75 * df_input['ppg_predictors'] + 0.25 * df_input['lifestyle_predictors']) /0.75
+    return df_input
 
 
 if __name__ == '__main__': 
